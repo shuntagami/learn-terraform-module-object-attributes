@@ -11,11 +11,11 @@ resource "aws_s3_bucket_website_configuration" "web" {
   bucket = aws_s3_bucket.web.id
 
   index_document {
-    suffix = var.index_document_suffix
+    suffix = var.files.index_document_suffix
   }
 
   error_document {
-    key = var.error_document_key
+    key = var.files.error_document_key
   }
 }
 
@@ -49,11 +49,11 @@ module "template_files" {
   source  = "hashicorp/dir/template"
   version = "1.0.2"
 
-  base_dir = var.www_path != null ? var.www_path : "${path.module}/www"
+  base_dir = var.files.www_path != null ? var.files.www_path : "${path.module}/www"
 }
 
 resource "aws_s3_object" "web" {
-  for_each = var.terraform_managed_files ? module.template_files.files : {}
+  for_each = var.files.terraform_managed ? module.template_files.files : {}
 
   bucket = aws_s3_bucket.web.id
 
