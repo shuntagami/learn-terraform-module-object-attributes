@@ -27,3 +27,15 @@ variable "files" {
     www_path              = optional(string)
   })
 }
+
+variable "cors_rules" {
+  description = "List of CORS rules."
+  type = list(object({
+    allowed_headers = optional(set(string)),
+    allowed_methods = set(string),
+    allowed_origins = set(string),
+    expose_headers  = optional(set(string)),
+    max_age_seconds = optional(number)
+  }))
+  default = []
+}

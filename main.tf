@@ -20,6 +20,20 @@ module "website_s3_bucket" {
     www_path          = "${path.root}/www" // Here overrideing default www_path
   }
 
+  cors_rules = [
+    {
+      allowed_headers = ["*"],
+      allowed_methods = ["PUT", "POST"],
+      allowed_origins = ["https://test.example.com"],
+      expose_headers  = ["ETag"],
+      max_age_seconds = 3000
+    },
+    {
+      allowed_methods = ["GET"],
+      allowed_origins = ["*"]
+    }
+  ]
+
   tags = {
     terraform     = "true"
     environment   = "dev"

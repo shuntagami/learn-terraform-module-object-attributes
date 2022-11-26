@@ -63,3 +63,25 @@ resource "aws_s3_object" "web" {
   etag         = each.value.digests.md5
   content_type = each.value.content_type
 }
+
+# This resource uses the dynamic block to create a cors_rule block for each item in the var.cors_rules list.
+# When the list is empty, the count meta-argument will evaluate to 0, and Terraform will not provision this resource.
+# Otherwise, the dynamic block will create a CORS rule for each object in the list.
+# Since optional object attributes default to null, Terraform will not set values for them unless the module user specifies them.
+resource "aws_s3_bucket_cors_configuration" "web" {
+  count = length(var.cors_rules) > 0 ? 1 : 0
+
+  bucket = aws_s3_bucket.web.id
+
+  dynamic "cors_rule" {
+    for_each = var.cors_rules
+
+    content {
+      allowed_headers = cors_rule.value["allowed_headers"]
+      allowed_methods = cors_rule.value["allowed_methods"]
+      allowed_origins = cors_rule.value["allowed_origins"]
+      expose_headers  = cors_rule.value["expose_headers"]
+      max_age_seconds = cors_rule.value["max_age_seconds"]
+    }
+  }
+}
